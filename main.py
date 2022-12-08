@@ -16,6 +16,11 @@
 # Member_4:
 # *********************************************************
 
+import os;
+
+def clear():
+    os.system('cls' if os.name == 'nt' else 'clear')
+
 def first():
     option = input("Would you like to login or register? \n").lower()
     if option != "register" and option != "login":
@@ -46,6 +51,7 @@ def second(option):
                 admin();
             else:
                 print("Administrative Password Incorrect, Administrative Access Denied.\nRedirecting to login page...")
+                second(login);
         else:
             password = input("Enter your password: ")
             login(username,password)
@@ -61,18 +67,18 @@ def login(username,password):
         a,b = info.split(" | ")
         b = b.strip()
         if(a == username and b == password):
-            print("Login successful! Welcome " + username + "!")
-            app()
+            print(f"Login successful! Welcome {username}!");
+            app(username);
         else:
             print("Invalid username or password.\n Redirecting to first screen...")
             first()
     file.close()
 
-def app():
-    print("Welcome to Darrance's Login System!")
-    print("Success.")
+def app(username):
+    print("Welcome to ADHL Fashion Boutique!")
 
 def admin():
     pass;
 
-first()
+clear();
+first();
