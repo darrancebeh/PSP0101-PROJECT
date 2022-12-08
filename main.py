@@ -37,8 +37,18 @@ def second(option):
                 print("\nPasswords do not match.\nRedirecting back to password data entry...\n")
     else:
         username = input("Enter your username: ")
-        password = input("Enter your password: ")
-        login(username,password)
+        if(username == "admin"):
+            adminpass = "iamadmin1234";
+            print("Admin Account Detected...")
+            admintest = input("Please enter the administrative password: ")
+            if(admintest == adminpass):
+                print("Admin Password Accepted...\nRedirecting to administrative menu...")
+                admin();
+            else:
+                print("Administrative Password Incorrect, Administrative Access Denied.\nRedirecting to login page...")
+        else:
+            password = input("Enter your password: ")
+            login(username,password)
 
 def register(username,password):
     file = open("registry.txt", "a")
@@ -61,5 +71,8 @@ def login(username,password):
 def app():
     print("Welcome to Darrance's Login System!")
     print("Success.")
+
+def admin():
+    pass;
 
 first()
