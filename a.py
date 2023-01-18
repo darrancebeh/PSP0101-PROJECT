@@ -1,4 +1,5 @@
-txt = "darrance | 1234"
+store = {
+    '1' : ["Darrance", "1234"],
+}
 
-a= txt.split(" | ")[0]
-print(a)
+print(store['1'][1])
