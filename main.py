@@ -262,7 +262,15 @@ def adminManageMember(username, password):
         elif(opt == '4'):
             admin(username, password);
         else:
-            adminDict[opt](username, password, prompt);
+            aOpt = input("Are You Sure You Want to Remove/Ban This Member? [ Y / N ]\nThis Action is IRREVERSIBLE.\n").lower();
+            if(aOpt == "y"):
+                adminDict[opt](username, password, prompt);
+            elif(aOpt == "n"):
+                print("Process Aborted. Redirecting to Member List...");
+                adminManageMember(username, password);
+            else:
+                print("Invalid Input. Redirecting to Member List");
+                adminManageMember(username, password);
 
     else:
         print("Invalid Input. Please Enter A Registered Member's Name.");
@@ -281,8 +289,33 @@ def adminRemoveMember(username, password, member):
             file.write(line);
     file.close();
 
+    print(f"{member} Has Been Successfully Removed.");
+    print("Redirecting to Administrative Menu...");
+    time.sleep(1);
+    admin(username, password);
+
 def adminBanMember(username, password, member):
-    pass;
+    file = open("registry.txt", "r");
+    lines = file.readlines();
+    file.close();
+
+    file = open("registry.txt", "w");
+    for line in lines:
+        info = line.split(" | ");
+
+        if info[0] == member:
+                info[0] = f"BANNED{member}";
+                file.write(" | ".join(info));
+        else:
+            file.write(line);
+
+    file.close();
+    print("Member Successfully Banned.");
+    print("Redirecting to Administrative Menu...");
+    time.sleep(1);
+
+    admin(username, password);
+    
 
 def adminEditMenu(username, password):
     pass;
