@@ -28,11 +28,7 @@ def clear():
 #login system | login or register
 def logOrReg():
     option = input("Would you like to login or register? \n").lower();
-    if option != "register" and option != "login":
-        print("Please enter a valid input.\n");
-        logOrReg();
-    else:
-        return option;
+    return option;
 
 #login system | login/registration
 def logReg(option):
@@ -77,10 +73,16 @@ def logReg(option):
 #login system | registration
 def register(username,password):
     file = open("registry.txt", "a");
-    file.write(username + " | " + password + "\n");
+    
+    if(username == "admin"):
+        file.write(f"{username} | {password} | ADMIN\n");
+        print(f"Administrator Registration Success! Welcome, {username}!");
+    else:
+        file.write(f"{username} | {password} | MEMBER\n");
+        print(f"\nMember Registration Success! Welcome, {username}!");
+    
     file.close();
 
-    print(f"\nRegistration Success! Welcome, {username}!");
     print("Redirecting to first screen...\n");
     loginSys();
     
@@ -89,8 +91,7 @@ def isSameUsername(username):
     file = open("registry.txt", "r");
 
     for info in file:
-        a,b = info.split(" | ");
-        b = b.strip();
+        a = info.split(" | ")[0];
         if(username == a):
             return True;
 
@@ -102,16 +103,26 @@ def login(username,password):
     flag = True;
     file = open("registry.txt", "r")
     for info in file:
-        a,b = info.split(" | ")
-        b = b.strip()
+        a, b, c = info.split(" | ")
+        b = b.strip();
+        c = c.strip();
+
         if(username == a and password == b):
-            if(username == "admin"):
+            if(c == "ADMIN"):
                 print("Admin Login Attempt Successful! Navigating to Administrative Menu...\n");
                 admin(username, password);
                 flag = False;
-            else:
+
+            elif(c == "USER"):
                 print(f"Login Successful! Welcome {username}!");
                 app(username, password);
+                flag = False;
+
+            elif(c == "BANNED"):
+                print(f"User {username} Has Been Banned From Using Our Services. Thank You for Understanding.\n");
+                print("Redirecting to First Screen...");
+                time.sleep(1);
+                loginSys();
                 flag = False;
 
     if(flag):
@@ -241,8 +252,9 @@ def adminManageMember(username, password):
     print("[ Enter Username to View Actions ]\n");
     file = open("registry.txt", "r");
     for info in file:
-        a, b = info.split(" | ");
-        print(f"{count} | Username: {a} | Password: {b}", end="");
+        a, b, c = info.split(" | ");
+        
+        print(f"{count} | Username: {a} | Password: {b} | Privilege: {c}", end="");
         count += 1;
     file.close();
 
@@ -304,8 +316,8 @@ def adminBanMember(username, password, member):
         info = line.split(" | ");
 
         if info[0] == member:
-                info[0] = f"BANNED{member}";
-                file.write(" | ".join(info));
+            info[2] = "BANNED\n";
+            file.write(" | ".join(info));
         else:
             file.write(line);
 
@@ -327,7 +339,13 @@ def adminEditMenu(username, password):
 #LOGIN SYSTEM MASTER FUNCTION
 def loginSys():
     print("_____________________________________________________________\n")
-    option = logOrReg();
+    option = "";
+    while(option != "register" or option != "login"):
+        option = logOrReg();
+        if(option == "register" or option == "login"):
+            break;
+        else:
+            print("Please Enter a Valid Input. [ Login / Register ]\n");
     fType, username, password = logReg(option);
 
     funcDict = {
@@ -374,7 +392,6 @@ def admin(username, password):
         '1' : loginChangePassword,
         '2' : adminManageMember,
         '3' : adminEditMenu,
-        '4' : loginSys,
     };
 
     if(option == '4'):

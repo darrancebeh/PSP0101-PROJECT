@@ -1,1 +1,3 @@
-admin | admin123
+admin | 123 | ADMIN
+darrance | 123 | BANNED
+darrancebeh | 1234 | MEMBER
