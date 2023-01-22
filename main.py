@@ -296,19 +296,59 @@ def viewStore(username, password):
     else:
         funcDict[option](username, password);
 
-## CONTINUE HERE
-## CONTINUE HERE 
-## CONTINUE HERE
-## CONTINUE HERE 
-## CONTINUE HERE
-## CONTINUE HERE 
-## CONTINUE HERE
-## CONTINUE HERE V
-# YOU STOPPED HERE!!!!
+
+#YOU STOPPED HERE
+#CONTINUE V
+#CONTINUE V
+#CONTINUE V
+#CONTINUE V
+#CONTINUE V
+#CONTINUE V
+#CONTINUE V
 def addCart(username, password, cartItems):
-    print(cartItems);
+    file = open("usersCart.txt", "r");
+    lines = file.readlines();
+    file.close();
 
+    cart = [];
 
+    file = open("storeMenu.txt", "r");
+    for info in file:
+        for item in cartItems:
+            a, b, c = info.split(" | ");
+            a = a.strip(); 
+            b = b.strip(); 
+            c = c.strip();
+
+            if(item == a):
+                cart.append(f"{b} | {c}");
+
+    file.close();
+
+    nameList = [];
+    for line in lines:
+        name = line.split(", ")[0];
+        nameList.append(name);
+
+    if(username not in nameList):
+        file = open("usersCart.txt", "a");
+
+        file.write(f"{username}, {cart}\n");
+
+        file.close();
+
+    else:
+        file = open("usersCart.txt", "r");
+        for info in file:
+            a, b = line.split(", ");
+            a = a.strip();
+            b = b.strip();
+
+            if(a == username):
+                cart.append(b[2:-2]);
+            
+            print(cart);
+        file.close();
 
 def viewCart(username, password):
     pass;
@@ -400,7 +440,6 @@ def adminBanMember(username, password, member):
     time.sleep(1);
 
     admin(username, password);
-    
 
 def adminEditMenu(username, password):
     pass;
