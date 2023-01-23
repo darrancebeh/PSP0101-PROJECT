@@ -296,15 +296,6 @@ def viewStore(username, password):
     else:
         funcDict[option](username, password);
 
-
-#YOU STOPPED HERE
-#CONTINUE V
-#CONTINUE V
-#CONTINUE V
-#CONTINUE V
-#CONTINUE V
-#CONTINUE V
-#CONTINUE V
 def addCart(username, password, cartItems):
     file = open("usersCart.txt", "r");
     lines = file.readlines();
@@ -327,32 +318,96 @@ def addCart(username, password, cartItems):
 
     nameList = [];
     for line in lines:
-        name = line.split(", ")[0];
+        name = line.split(" ||| ")[0];
         nameList.append(name);
 
     if(username not in nameList):
         file = open("usersCart.txt", "a");
 
-        file.write(f"{username}, {cart}\n");
+        file.write(f"{username} ||| {cart}\n");
 
         file.close();
 
     else:
         file = open("usersCart.txt", "r");
         for info in file:
-            a, b = line.split(", ");
+            a, b = line.split(" ||| ");
             a = a.strip();
             b = b.strip();
 
             if(a == username):
                 cart.append(b[2:-2]);
-            
-            print(cart);
         file.close();
 
+        file = open("usersCart.txt", "w");
+        for line in lines:
+            info = line.split(" ||| ");
+            if(info[0] == username):
+                file.write(f"{username} ||| {cart}\n");
+            else:
+                file.write(line);
+            
 def viewCart(username, password):
-    pass;
+    clear();
+    print(f"Hello, {username}!\nDisplaying your Cart...\n");
 
+    file = open("usersCart.txt", "r");
+    totalPrice = 0.00;
+    count = 1;
+
+    for info in file:
+        a, b = info.split(" ||| ");
+        b = b.strip();
+        if(username in a):
+            if(a == username):
+                items = b.split(", ");
+                for item in items:
+                    item = item.strip("'");
+                    item = item.strip("[");
+                    item = item.strip("]");
+                    item = item.strip('"');
+                    item = item.strip("['");
+
+                    name, price = item.split(" | ");
+                    name = name.strip();
+                    price = price.strip();
+                    price = float(price);
+                    totalPrice += price;
+                    print(f"{count} | {name} | Price: RM{price}");
+                    count += 1;
+                totalPrice = round(totalPrice, 3);
+                print(f"\n\nTotal Items: {count}   |   Total Price: RM{totalPrice}");
+                option = input("[1] - Check Out\n[2] - Remove Items from Cart\n[3] - View Store\n[4] - Return to User Menu\n\n");
+
+                funcDict = {
+                    '3' : viewStore,
+                    '4' : app,
+                };
+
+                if(option == '3' or option == '4'):
+                    funcDict[option](username, password);
+                else:
+                    if(option == '1'):
+                        pass;
+                        #YOU STOPPED HERE  ^
+                        #KEYNOTE: CHECK OUT CART / REMOVE ITEMS FROM CART
+                        #YOU STOPPED HERE  ^
+                        #YOU STOPPED HERE  ^
+                        #YOU STOPPED HERE  ^
+                        #YOU STOPPED HERE  ^
+                        #YOU STOPPED HERE  ^
+                        #YOU STOPPED HERE  ^
+                        #YOU STOPPED HERE  ^
+                        
+                
+        else:
+            print(f"Your Cart is Empty. There is Nothing To Display.\n");
+            opt = input("Enter Any Input to Return to User Menu.\n");
+            print("Redirecting to User Menu...\n");
+            time.sleep(1);
+            app(username, password, "MEMBER");
+
+    file.close();
 
 #app END
 
@@ -489,10 +544,24 @@ def adminManageAdmins(username, password):
 
 #admin END
 
+#GENERAL FUNCTIONS START
+
+def exitProgram(username, password):
+    clear();
+    print(f"Thank You For Browsing ADHL Fashion Boutique!\n");
+    print(f"We Hope You Enjoyed Your Stay, {username}!");
+    print("Do Visit Us Again!\n\n");
+
+    print("Exiting Program...");
+    time.sleep(2);
+
+#GENERAL FUNCTIONS END
+
 #MASTER FUNCTIONS START
 
 #LOGIN SYSTEM MASTER FUNCTION
 def loginSys():
+    clear();
     print("_____________________________________________________________\n");
     option = "";
     while(option != "register" or option != "login"):
@@ -519,20 +588,20 @@ def app(username, password, status):
     print(f"We are pleased to have you, {username}!");
 
     print("What would you like to do?\n");
-    option = input("[1] - Edit Username/Password\n[2] - View Our Store\n[3] - View Cart\n[4] - Return to Login Menu\n\n");
+    option = input("[1] - Edit Username/Password\n[2] - View Our Store\n[3] - View Cart\n[4] - Return to Login Menu\n[5] - Exit Program\n\n");
 
     appDict = {
         '1' : userDetailChange,
         '2' : viewStore,
         '3' : viewCart,
         '4' : loginSys,
+        '5' : exitProgram,
     };
 
     if(option == '4'):
         loginSys();
     else:
         appDict[option](username, password);
-
 
 #ADMIN APP MASTER FUNCTION
 def admin(username, password, status):
@@ -541,13 +610,14 @@ def admin(username, password, status):
     print("\nAdministrative Menu");
     print(f"What would you like to do, {username}?\n");
 
-    option = input("[1] - Change Administrator Password\n[2] - Manage Registered Member List\n[3] - Manage Administrator Accounts\n[4] - Edit Store Menu\n[5] - Return to Login Menu\n\n");
+    option = input("[1] - Change Administrator Password\n[2] - Manage Registered Member List\n[3] - Manage Administrator Accounts\n[4] - Edit Store Menu\n[5] - Return to Login Menu\n[6] - Exit Program\n\n");
 
     appDict = {
         '1' : loginChangePassword,
         '2' : adminManageMember,
         '3' : adminManageAdmins,
         '4' : adminEditMenu,
+        '6' : exitProgram,
     };
 
     if(option == '5'):
@@ -557,5 +627,4 @@ def admin(username, password, status):
 
 #MASTER FUNCTIONS END
 
-clear();
 loginSys();
