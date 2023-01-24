@@ -117,7 +117,7 @@ def login(username, password, status):
     flag = True;
     file = open("registry.txt", "r")
     for info in file:
-        a, b, c = info.split(" | ")
+        a, b, c = info.split(" | ");
         b = b.strip();
         c = c.strip();
 
@@ -386,81 +386,92 @@ def viewCart(username, password):
     file = open("usersCart.txt", "r");
     totalPrice = 0.00;
     count = 0;
+    
+    file.seek(0);
+    if(file.read() == ""):
+        print(f"Your Cart is Empty. There is Nothing To Display.\n");
+        opt = input("Enter Any Input to Return to User Menu.\n");
+        print("Redirecting to User Menu...\n");
+        time.sleep(1);
+        app(username, password, "MEMBER");
 
-    for info in file:
-        a, b = info.split(" ||| ");
-        b = b.strip();
-        if(username in a):
-            if(a == username):
-                items = b.split(", ");
-                for item in items:
-                    item = item.strip("'");
-                    item = item.strip("[");
-                    item = item.strip("]");
-                    item = item.strip('"');
-                    item = item.strip("['");
+    else:
+        for info in file:
+            a, b = info.split(" ||| ");
+            a = a.strip();
+            b = b.strip();
 
-                    name, price = item.split(" | ");
-                    name = name.strip();
-                    price = price.strip();
-                    price = float(price);
-                    totalPrice += price;
-                    count += 1;
-                    print(f"{count} | {name} | Price: RM{price}");
+            if(username in a):
+                if(a == username):
+                    items = b.split(", ");
+                    for item in items:
+                        item = item.strip("'");
+                        item = item.strip("[");
+                        item = item.strip("]");
+                        item = item.strip('"');
+                        item = item.strip("['");
 
-                totalPrice = round(totalPrice, 2);
-                print(f"\n\nTotal Items: {count}   |   Total Price: RM{totalPrice}");
-                option = input("[1] - Check Out\n[2] - Remove Items from Cart\n[3] - View Store\n[4] - Return to User Menu\n\n");
+                        name, price = item.split(" | ");
+                        name = name.strip();
+                        price = price.strip();
+                        price = float(price);
+                        totalPrice += price;
+                        count += 1;
+                        print(f"{count} | {name} | Price: RM{price}");
 
-                funcDict = {
-                    '3' : viewStore,
-                    '4' : app,
-                };
+                    totalPrice = round(totalPrice, 2);
+                    print(f"\n\nTotal Items: {count}   |   Total Price: RM{totalPrice}");
+                    option = input("[1] - Check Out\n[2] - Remove Items from Cart\n[3] - View Store\n[4] - Return to User Menu\n\n");
 
-                if(option == '3' or option == '4'):
-                    funcDict[option](username, password);
-                else:
-                    if(option == '1'):
-                        count = 1;
-                        totalPrice = 0.00;
+                    funcDict = {
+                        '3' : viewStore,
+                        '4' : app,
+                    };
 
-                        print("Proceeding with Checkout...\n");
-                        print("Total Billable Items: \n");
-                        for item in items:
-                            item = item.strip("'");
-                            item = item.strip("[");
-                            item = item.strip("]");
-                            item = item.strip('"');
-                            item = item.strip("['");
+                    if(option == '3' or option == '4'):
+                        funcDict[option](username, password);
+                    else:
+                        if(option == '1'):
+                            count = 1;
+                            totalPrice = 0.00;
 
-                            name, price = item.split(" | ");
-                            name = name.strip();
-                            price = price.strip();
-                            price = float(price);
-                            totalPrice += price;
-                            print(f"{count} | {name} | Price: RM{price}");
-                            count += 1;
-                        totalPrice = round(totalPrice, 2);
-                        print(f"Total Price of Cart: RM{totalPrice}");
+                            print("Proceeding with Checkout...\n");
+                            print("Total Billable Items: \n");
+                            for item in items:
+                                item = item.strip("'");
+                                item = item.strip("[");
+                                item = item.strip("]");
+                                item = item.strip('"');
+                                item = item.strip("['");
 
-                        opt = input("\nConfirm Checkout?\n[1] - Confirm Order\n[2] - Cancel Checkout\n\n"); 
+                                name, price = item.split(" | ");
+                                name = name.strip();
+                                price = price.strip();
+                                price = float(price);
+                                totalPrice += price;
+                                print(f"{count} | {name} | Price: RM{price}");
+                                count += 1;
+                            totalPrice = round(totalPrice, 2);
+                            print(f"Total Price of Cart: RM{totalPrice}");
 
-                        funcDict = {
-                            '1': checkOut,
-                            '2': app,
-                        };
+                            opt = input("\nConfirm Checkout?\n[1] - Confirm Order\n[2] - Cancel Checkout\n\n"); 
 
-                        if(opt == '1'):
-                            funcDict[opt](username, password, totalPrice);
-                        elif(opt == '2'):
-                            funcDict[opt](username, password, "MEMBER");
+                            funcDict = {
+                                '1': checkOut,
+                                '2': app,
+                            };
 
-        else:
-            print(f"Your Cart is Empty. There is Nothing To Display.\n");
-            opt = input("Enter Any Input to Return to User Menu.\n");
-            print("Redirecting to User Menu...\n");
-            time.sleep(1);
-            app(username, password, "MEMBER");
+                            if(opt == '1'):
+                                funcDict[opt](username, password, totalPrice);
+                            elif(opt == '2'):
+                                funcDict[opt](username, password, "MEMBER");
+
+            else:
+                print(f"Your Cart is Empty. There is Nothing To Display.\n");
+                opt = input("Enter Any Input to Return to User Menu.\n");
+                print("Redirecting to User Menu...\n");
+                time.sleep(1);
+                app(username, password, "MEMBER");
 
 # app | user function #5 - Check out Items in Cart;
 # asks user for confirmation
@@ -486,7 +497,50 @@ def checkOut(username, password, totalPrice):
     file.close();
 
 def manageCart(username, password):
-    pass;
+    file = open("usersCart.txt", "r");
+    lines = file.readline();
+        
+    for info in file:
+        a, b = info.split(" ||| ");
+        a = a.strip();
+        b = b.strip();
+
+        if(username in a):
+            if(a == username):
+                items = b.split(", ");
+                for item in items:
+                    item = item.strip("'");
+                    item = item.strip("[");
+                    item = item.strip("]");
+                    item = item.strip('"');
+                    item = item.strip("['");
+
+                    name, price = item.split(" | ");
+                    name = name.strip();
+                    price = price.strip();
+                    price = float(price);
+                    totalPrice += price;
+                    count += 1;
+                    print(f"{count} | {name} | Price: RM{price}");
+
+                totalPrice = round(totalPrice, 2);
+                print(f"\n\nTotal Items: {count}   |   Total Price: RM{totalPrice}");
+
+                #YOU LEFT HERE ^
+                #KEYNOTE: TO ADD: REMOVE ITEMS FROM CART FUNCTION
+                #KEYNOTE: ADD ADMIN EDIT MENU FUNCTION
+                # YOU LEFT HERE ^
+                # YOU LEFT HERE ^
+                # YOU LEFT HERE ^
+                # YOU LEFT HERE ^
+                # YOU LEFT HERE ^
+                # YOU LEFT HERE ^
+                # YOU LEFT HERE ^
+                # YOU LEFT HERE ^
+
+    file.close();
+
+
 
 #app END
 
