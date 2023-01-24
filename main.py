@@ -25,12 +25,14 @@ def clear():
 
 #login system START
 
-#login system | login or register
+# login system | login or register
+# returns "login"/"register"
 def logOrReg():
     option = input("Would you like to login or register? \n\n").lower();
     return option;
 
-#login system | login/registration
+# login system | login/registration
+# called by loginSys() and returns (username, password, status)
 def logReg(option):
     #user registration
     if option == "register":
@@ -58,6 +60,7 @@ def logReg(option):
                     if(opt == 'n'):
                         rFlag = False;
                         print("Redirecting to first screen...\n");
+                        time.sleep(1);
                         loginSys();
                     elif(opt == 'y'):
                         rFlag = False;
@@ -73,7 +76,9 @@ def logReg(option):
             password = input("Enter your password: ")
             return("logUser", username, password, "MEMBER");
 
-#login system | registration
+# login system | registration
+# opens registry.txt text file and registers user/admin credentials
+# redirects to loginSys()
 def register(username, password, status):
     file = open("registry.txt", "a");
     
@@ -90,7 +95,8 @@ def register(username, password, status):
     time.sleep(1);
     loginSys();
     
-#login system | check for username duplicate
+# login system | check for username duplicate
+# returns True if contains same username in registry database; returns False if else
 def isSameUsername(username):
     file = open("registry.txt", "r");
 
@@ -102,7 +108,11 @@ def isSameUsername(username):
     file.close();
     return False;
 
-#login system | login
+# login system | login
+# opens "registry.txt" and cross checks for registered user credentials.
+# redirects to loginSys() if credentials are false
+# logins as admin if credentials are correct and user status = "ADMIN"; logins as user if status = "MEMBER"
+# displays BANNED message to any banned users and redirects to loginSys()
 def login(username, password, status):
     flag = True;
     file = open("registry.txt", "r")
@@ -144,7 +154,8 @@ def login(username, password, status):
 
 #app | normal user START
 
-#app | user function #1 - Changing username/password
+# app | user function #1 - Changing username/password
+# user detail change master function; asks for input and redirects to specialized functions
 def userDetailChange(username, password):
     clear();
     print("Option Selected - [ Edit Username/Password ]\n");
@@ -157,6 +168,10 @@ def userDetailChange(username, password):
 
     logDetDict[logDetOpt](username, password);
 
+# app | Change user username function
+# prompts user to enter new username
+# opens "registry.txt" as write mode and rewrites the line with previous user username
+# replaces the line with previous user username with new username
 def loginChangeUsername(username, password):
     clear();
     print("What would you like to change your username to?\n");
@@ -181,6 +196,8 @@ def loginChangeUsername(username, password):
     print("Redirecting to first screen...\n");
     loginSys();
 
+# app | Change user password function
+# same strategy with loginChangeUsername but changes password instead
 def loginChangePassword(username, password):
     clear();
     flag = True;
@@ -238,6 +255,10 @@ def loginChangePassword(username, password):
             else:
                 print("Invalid input. Please try again!\n");
 
+# app | user function #2 - Viewing Retail Store
+# displays all items for sale in format (Quantity | Name | Price) !All items are edit-able in admin menu
+# asks user for input and redirects to either [1] - add items to cart; [2] - viewCart function; [3] - Redirects to user menu
+# add items to cart by manipulating and appending cart items to current user in usersCart.txt
 def viewStore(username, password):
     clear();
     print("ADHL Fashion Store Catalogue: \n");
@@ -296,6 +317,13 @@ def viewStore(username, password):
     else:
         funcDict[option](username, password);
 
+
+# app | user function #3 - Adding Items to Cart
+# called by viewStore() function; Appends Cart Items to "usersCart.txt"
+# using data in variable (cartItems) obtained in viewStore() function,
+# appends items/"values" in cartItems to user cart in "usersCart.txt"
+# if user already has existing cart in "usersCart.txt", simply append item to existing cart.
+# if user does not have existing cart, create new line with format (username ||| cartItems);
 def addCart(username, password, cartItems):
     file = open("usersCart.txt", "r");
     lines = file.readlines();
@@ -346,14 +374,18 @@ def addCart(username, password, cartItems):
                 file.write(f"{username} ||| {cart}\n");
             else:
                 file.write(line);
-            
+
+# app | user function #4 - Viewing Items in Cart
+# call-able by app() and viewStore() function
+# opens "usersCart.txt" and displays items in format (QUANTITY | NAME | PRICE);
+# prompts user for input for action which redirects to: [1] - checkOut() function, [2] - manageCart() function, [3] - viewStore() function, [4] - User menu     
 def viewCart(username, password):
     clear();
     print(f"Hello, {username}!\nDisplaying your Cart...\n");
 
     file = open("usersCart.txt", "r");
     totalPrice = 0.00;
-    count = 1;
+    count = 0;
 
     for info in file:
         a, b = info.split(" ||| ");
@@ -373,9 +405,10 @@ def viewCart(username, password):
                     price = price.strip();
                     price = float(price);
                     totalPrice += price;
-                    print(f"{count} | {name} | Price: RM{price}");
                     count += 1;
-                totalPrice = round(totalPrice, 3);
+                    print(f"{count} | {name} | Price: RM{price}");
+
+                totalPrice = round(totalPrice, 2);
                 print(f"\n\nTotal Items: {count}   |   Total Price: RM{totalPrice}");
                 option = input("[1] - Check Out\n[2] - Remove Items from Cart\n[3] - View Store\n[4] - Return to User Menu\n\n");
 
@@ -388,18 +421,40 @@ def viewCart(username, password):
                     funcDict[option](username, password);
                 else:
                     if(option == '1'):
-                        pass;
-                        #YOU STOPPED HERE  ^
-                        #KEYNOTE: CHECK OUT CART / REMOVE ITEMS FROM CART
-                        #YOU STOPPED HERE  ^
-                        #YOU STOPPED HERE  ^
-                        #YOU STOPPED HERE  ^
-                        #YOU STOPPED HERE  ^
-                        #YOU STOPPED HERE  ^
-                        #YOU STOPPED HERE  ^
-                        #YOU STOPPED HERE  ^
-                        
-                
+                        count = 1;
+                        totalPrice = 0.00;
+
+                        print("Proceeding with Checkout...\n");
+                        print("Total Billable Items: \n");
+                        for item in items:
+                            item = item.strip("'");
+                            item = item.strip("[");
+                            item = item.strip("]");
+                            item = item.strip('"');
+                            item = item.strip("['");
+
+                            name, price = item.split(" | ");
+                            name = name.strip();
+                            price = price.strip();
+                            price = float(price);
+                            totalPrice += price;
+                            print(f"{count} | {name} | Price: RM{price}");
+                            count += 1;
+                        totalPrice = round(totalPrice, 2);
+                        print(f"Total Price of Cart: RM{totalPrice}");
+
+                        opt = input("\nConfirm Checkout?\n[1] - Confirm Order\n[2] - Cancel Checkout\n\n"); 
+
+                        funcDict = {
+                            '1': checkOut,
+                            '2': app,
+                        };
+
+                        if(opt == '1'):
+                            funcDict[opt](username, password, totalPrice);
+                        elif(opt == '2'):
+                            funcDict[opt](username, password, "MEMBER");
+
         else:
             print(f"Your Cart is Empty. There is Nothing To Display.\n");
             opt = input("Enter Any Input to Return to User Menu.\n");
@@ -407,12 +462,40 @@ def viewCart(username, password):
             time.sleep(1);
             app(username, password, "MEMBER");
 
+# app | user function #5 - Check out Items in Cart;
+# asks user for confirmation
+# if confirmed, empties cart and displays total price to be paid in physical outlet.
+def checkOut(username, password, totalPrice):
+    clear();
+    file = open("usersCart.txt", "r");
+    lines = file.readlines();
     file.close();
+
+    file = open("usersCart.txt", "w");
+
+    for line in lines:
+        name = line.split(" ||| ")[0];
+        if(name != username):
+            file.write(line);
+
+        print(f"Order Confirmed. Your Cart has Been Emptied.\nPlease Collect Your Items and Pay Cash of Amount [ RM{totalPrice} ] at Our Physical Outlet!");
+        print("\nThank You for Shopping at ADHL Fashion Boutique. Please Visit Again!");
+        x = input("Enter Any Key to Return to User Menu: ");
+        app(username, password, "MEMBER");       
+
+    file.close();
+
+def manageCart(username, password):
+    pass;
 
 #app END
 
 #admin START
 
+# admin | admin function #1 - Manage Members
+# displays all registered users, incl. admins.
+# asks user for input to remove/ban/(return to admin menu)
+# asks user for confirmation if selected option == "remove/ban" user
 def adminManageMember(username, password):
     clear();
     count = 1;
@@ -457,6 +540,9 @@ def adminManageMember(username, password):
         time.sleep(1);
         adminManageMember(username, password);
 
+# admin | admin function #2 - Removing Registered Member
+# opens (registry.txt) and removes specified user credentials.
+# removed user credentials no longer exists in database; unable to log in.
 def adminRemoveMember(username, password, member):
     file = open("registry.txt", "r");
     lines = file.readlines();
@@ -474,6 +560,9 @@ def adminRemoveMember(username, password, member):
     time.sleep(1);
     admin(username, password);
 
+# admin | admin function #3 - Banning Registered Member
+# opens (registry.txt) and changes specified user status from "MEMBER" to "BANNED";
+# banned user is no longer able to log in using their credentials.
 def adminBanMember(username, password, member):
     file = open("registry.txt", "r");
     lines = file.readlines();
@@ -496,9 +585,15 @@ def adminBanMember(username, password, member):
 
     admin(username, password);
 
+
+# admin | admin function #4 - Editing Store Menu
+# not done
 def adminEditMenu(username, password):
     pass;
 
+# admin | admin function #5 - Editing Administrator Accounts
+# displays all registered administrator accounts
+# prompts user for input to (create new account)/ (remove existing admin account)/ (return to admin menu)
 def adminManageAdmins(username, password):
     clear();
     print("Selected Option: New Administrator Account Creation\n");
@@ -546,6 +641,7 @@ def adminManageAdmins(username, password):
 
 #GENERAL FUNCTIONS START
 
+# General function - Exits Program and Displays Exit Message c:
 def exitProgram(username, password):
     clear();
     print(f"Thank You For Browsing ADHL Fashion Boutique!\n");
@@ -560,6 +656,9 @@ def exitProgram(username, password):
 #MASTER FUNCTIONS START
 
 #LOGIN SYSTEM MASTER FUNCTION
+# First function to run in program.
+# Prompts user to register/login
+# Contains function dictionary to redirect to specified functions easily.
 def loginSys():
     clear();
     print("_____________________________________________________________\n");
@@ -581,6 +680,8 @@ def loginSys():
     funcDict[fType](username, password, status);
 
 #USER APP MASTER FUNCTION
+# Normal Member User Interface Master Function
+# Contains Function Dictionary to Redirect User To Specific User Functions
 def app(username, password, status):
     clear();
     print("_____________________________________________\n")
@@ -604,6 +705,8 @@ def app(username, password, status):
         appDict[option](username, password);
 
 #ADMIN APP MASTER FUNCTION
+# Admin User Interface Master Function
+# Contains Function Dictionary to Redirect Admin to Specific Admin Functions
 def admin(username, password, status):
     clear();
     print(f"Welcome back, {username}!");
@@ -627,4 +730,5 @@ def admin(username, password, status):
 
 #MASTER FUNCTIONS END
 
+# Initial Function Call
 loginSys();
