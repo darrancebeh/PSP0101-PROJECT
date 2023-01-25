@@ -142,9 +142,11 @@ def login(username, password, status):
     if(flag):
         if(username == "admin"):
             print("Admin Login Attempt Unsuccessful. Redirecting to First Screen...");
+            time.sleep(2);
             loginSys();
         else:
             print("Invalid username or password.\nRedirecting to first screen...");
+            time.sleep(2);
             loginSys();
     file.close()
 
@@ -154,7 +156,7 @@ def login(username, password, status):
 
 #app | normal user START
 
-# app | user function #1 - Changing username/password
+# app | User Credential Change Master Function
 # user detail change master function; asks for input and redirects to specialized functions
 def userDetailChange(username, password):
     clear();
@@ -168,7 +170,7 @@ def userDetailChange(username, password):
 
     logDetDict[logDetOpt](username, password);
 
-# app | Change user username function
+# app | user function #1 - Change user username
 # prompts user to enter new username
 # opens "registry.txt" as write mode and rewrites the line with previous user username
 # replaces the line with previous user username with new username
@@ -196,7 +198,7 @@ def loginChangeUsername(username, password):
     print("Redirecting to first screen...\n");
     loginSys();
 
-# app | Change user password function
+# app | user function #2 - Change user password function
 # same strategy with loginChangeUsername but changes password instead
 def loginChangePassword(username, password):
     clear();
@@ -255,7 +257,7 @@ def loginChangePassword(username, password):
             else:
                 print("Invalid input. Please try again!\n");
 
-# app | user function #2 - Viewing Retail Store
+# app | user function #3 - Viewing Retail Store
 # displays all items for sale in format (Quantity | Name | Price) !All items are edit-able in admin menu
 # asks user for input and redirects to either [1] - add items to cart; [2] - viewCart function; [3] - Redirects to user menu
 # add items to cart by manipulating and appending cart items to current user in usersCart.txt
@@ -317,8 +319,7 @@ def viewStore(username, password):
     else:
         funcDict[option](username, password);
 
-
-# app | user function #3 - Adding Items to Cart
+# app | user function #4 - Adding Items to Cart
 # called by viewStore() function; Appends Cart Items to "usersCart.txt"
 # using data in variable (cartItems) obtained in viewStore() function,
 # appends items/"values" in cartItems to user cart in "usersCart.txt"
@@ -375,27 +376,31 @@ def addCart(username, password, cartItems):
             else:
                 file.write(line);
 
-# app | user function #4 - Viewing Items in Cart
+# app | user function #5 - Viewing Items in Cart
 # call-able by app() and viewStore() function
 # opens "usersCart.txt" and displays items in format (QUANTITY | NAME | PRICE);
 # prompts user for input for action which redirects to: [1] - checkOut() function, [2] - manageCart() function, [3] - viewStore() function, [4] - User menu     
 def viewCart(username, password):
     clear();
-    print(f"Hello, {username}!\nDisplaying your Cart...\n");
-
     file = open("usersCart.txt", "r");
     totalPrice = 0.00;
     count = 0;
     
     file.seek(0);
     if(file.read() == ""):
-        print(f"Your Cart is Empty. There is Nothing To Display.\n");
+        print(f"Your Cart is Empty. There is Nothing To Empty.\n");
         opt = input("Enter Any Input to Return to User Menu.\n");
         print("Redirecting to User Menu...\n");
+        file.close();
         time.sleep(1);
         app(username, password, "MEMBER");
 
     else:
+        file.close();
+        print(f"Hello, {username}\n");
+        print("Displaying Your Cart...\n");
+
+        file = open("usersCart.txt", "r");
         for info in file:
             a, b = info.split(" ||| ");
             a = a.strip();
@@ -421,59 +426,65 @@ def viewCart(username, password):
 
                     totalPrice = round(totalPrice, 2);
                     print(f"\n\nTotal Items: {count}   |   Total Price: RM{totalPrice}");
-                    option = input("[1] - Check Out\n[2] - Remove Items from Cart\n[3] - View Store\n[4] - Return to User Menu\n\n");
+                    option = input("[1] - Check Out\n[2] - Empty Cart\n[3] - View Store\n[4] - Return to User Menu\n\n");
 
                     funcDict = {
+                        '2' : emptyCart,
                         '3' : viewStore,
-                        '4' : app,
                     };
 
-                    if(option == '3' or option == '4'):
-                        funcDict[option](username, password);
+                    if(option == '1'):
+                        count = 1;
+                        totalPrice = 0.00;
+
+                        print("Proceeding with Checkout...\n");
+                        print("Total Billable Items: \n");
+                        for item in items:
+                            item = item.strip("'");
+                            item = item.strip("[");
+                            item = item.strip("]");
+                            item = item.strip('"');
+                            item = item.strip("['");
+
+                            name, price = item.split(" | ");
+                            name = name.strip();
+                            price = price.strip();
+                            price = float(price);
+                            totalPrice += price;
+                            print(f"{count} | {name} | Price: RM{price}");
+                            count += 1;
+                        totalPrice = round(totalPrice, 2);
+                        print(f"Total Price of Cart: RM{totalPrice}");
+
+                        opt = input("\nConfirm Checkout?\n[1] - Confirm Order\n[2] - Cancel Checkout\n\n"); 
+
+                        if(opt == '1'):
+                            checkOut(username, password, totalPrice);
+                        elif(opt == '2'):
+                            print("Redirecting to User Menu...\n");
+                            time.sleep(1);
+                            app(username, password, "MEMBER");
+                        else:
+                            print("Invalid Input. Operation Cancelled.\n");
+                            print("Redirecting to User Menu...\n");
+                            time.sleep(1);
+                            app(username, password, "MEMBER");
+
+                    elif(option == '4'):
+                        print("Redirecting to User Menu...\n");
+                        time.sleep(1);
+                        app(username, password, "MEMBER");
+
                     else:
-                        if(option == '1'):
-                            count = 1;
-                            totalPrice = 0.00;
-
-                            print("Proceeding with Checkout...\n");
-                            print("Total Billable Items: \n");
-                            for item in items:
-                                item = item.strip("'");
-                                item = item.strip("[");
-                                item = item.strip("]");
-                                item = item.strip('"');
-                                item = item.strip("['");
-
-                                name, price = item.split(" | ");
-                                name = name.strip();
-                                price = price.strip();
-                                price = float(price);
-                                totalPrice += price;
-                                print(f"{count} | {name} | Price: RM{price}");
-                                count += 1;
-                            totalPrice = round(totalPrice, 2);
-                            print(f"Total Price of Cart: RM{totalPrice}");
-
-                            opt = input("\nConfirm Checkout?\n[1] - Confirm Order\n[2] - Cancel Checkout\n\n"); 
-
-                            funcDict = {
-                                '1': checkOut,
-                                '2': app,
-                            };
-
-                            if(opt == '1'):
-                                funcDict[opt](username, password, totalPrice);
-                            elif(opt == '2'):
-                                funcDict[opt](username, password, "MEMBER");
-
+                        funcDict[option](username, password);
             else:
-                print(f"Your Cart is Empty. There is Nothing To Display.\n");
+                print(f"Your Cart is Empty. There is Nothing To Empty.\n");
                 opt = input("Enter Any Input to Return to User Menu.\n");
                 print("Redirecting to User Menu...\n");
                 time.sleep(1);
                 app(username, password, "MEMBER");
 
-# app | user function #5 - Check out Items in Cart;
+# app | user function #6 - Check out Items in Cart;
 # asks user for confirmation
 # if confirmed, empties cart and displays total price to be paid in physical outlet.
 def checkOut(username, password, totalPrice):
@@ -496,51 +507,74 @@ def checkOut(username, password, totalPrice):
 
     file.close();
 
-def manageCart(username, password):
+# app | user function #6 - Empty all user items in cart;
+# asks user for confirmation
+# if confirmed, removes user data and cart in "uesrsCart.txt"
+def emptyCart(username, password):
+    clear();
     file = open("usersCart.txt", "r");
-    lines = file.readline();
-        
-    for info in file:
-        a, b = info.split(" ||| ");
-        a = a.strip();
-        b = b.strip();
+    totalPrice = 0.00;
+    count = 0;
+    
+    file.seek(0);
+    if(file.read() == ""):
+        print(f"Your Cart is Empty. There is Nothing To Display.\n");
+        opt = input("Enter Any Input to Return to User Menu.\n");
+        print("Redirecting to User Menu...\n");
+        file.close();
+        time.sleep(1);
+        app(username, password, "MEMBER");
 
-        if(username in a):
-            if(a == username):
-                items = b.split(", ");
-                for item in items:
-                    item = item.strip("'");
-                    item = item.strip("[");
-                    item = item.strip("]");
-                    item = item.strip('"');
-                    item = item.strip("['");
+    else:
+        file.close();
+        file = open("usersCart.txt", "r");
+        for info in file:
+            a, b = info.split(" ||| ");
+            a = a.strip();
+            b = b.strip();
 
-                    name, price = item.split(" | ");
-                    name = name.strip();
-                    price = price.strip();
-                    price = float(price);
-                    totalPrice += price;
-                    count += 1;
-                    print(f"{count} | {name} | Price: RM{price}");
+            if(username in a):
+                print("Displaying Your Cart...\n");
+                if(a == username):
+                    items = b.split(", ");
+                    for item in items:
+                        item = item.strip("'");
+                        item = item.strip("[");
+                        item = item.strip("]");
+                        item = item.strip('"');
+                        item = item.strip("['");
 
-                totalPrice = round(totalPrice, 2);
-                print(f"\n\nTotal Items: {count}   |   Total Price: RM{totalPrice}");
+                        name, price = item.split(" | ");
+                        name = name.strip();
+                        price = price.strip();
+                        price = float(price);
+                        totalPrice += price;
+                        count += 1;
+                        print(f"{count} | {name} | Price: RM{price}");
+                    opt = input("\nAre You Sure You Want to Empty Your Cart? [ Y / N ]\n").lower();
 
-                #YOU LEFT HERE ^
-                #KEYNOTE: TO ADD: REMOVE ITEMS FROM CART FUNCTION
-                #KEYNOTE: ADD ADMIN EDIT MENU FUNCTION
-                # YOU LEFT HERE ^
-                # YOU LEFT HERE ^
-                # YOU LEFT HERE ^
-                # YOU LEFT HERE ^
-                # YOU LEFT HERE ^
-                # YOU LEFT HERE ^
-                # YOU LEFT HERE ^
-                # YOU LEFT HERE ^
+                    if(opt == 'y'):
+                        file = open("usersCart.txt", "r");
+                        lines = file.readlines();
+                        file.close();
 
-    file.close();
+                        file = open("usersCart.txt", "w");
+                        for line in lines:
+                            info = line.split(" ||| ");
+                            if(info[0] != username):
+                                file.write(line);
+                        file.close();
 
+                        print("Your Cart has Been Successfully Emptied!\n");
+                        print("Redirecting to User Menu...");
+                        time.sleep(2);
+                        app(username, password, "MEMBER");
 
+                    else:
+                        print("Cancelling Function...");
+                        print("Redireciting to User Menu...\n");
+                        time.sleep(1);
+                        app(username, password, "MEMBER");
 
 #app END
 
@@ -639,13 +673,139 @@ def adminBanMember(username, password, member):
 
     admin(username, password);
 
-
-# admin | admin function #4 - Editing Store Menu
+# admin | Editing Store Menu Master Function
 # not done
 def adminEditMenu(username, password):
-    pass;
+    clear();
+    print("Displaying Administrator Menu Editing Interface\n");
+    print("Current Store Menu:\n");
+    file = open("storeMenu.txt", "r");
+    lines = file.readlines();
+    file.close();
 
-# admin | admin function #5 - Editing Administrator Accounts
+    file = open("storeMenu.txt", "r");
+    totalPrice = 0.00;
+    count = 0;
+    
+    for info in file:
+        a, name, price = info.split(" | ");
+        a = a.strip();
+        name = name.strip();
+        price = price.strip();
+        print(f"{a} | Product: {name} | Price: RM{price}");
+        count += 1;
+        totalPrice += float(price);
+        totalPrice = round(totalPrice, 2);
+    print(f"\nTotal Item Count: {count}  |  Total Item Price: {totalPrice}");
+
+    option = input("What Would You Like to Do?\n[1] - Add Items\n[2] - Remove Items\n[3] - Edit Items\n[4] - Return to Administrator Menu\n\n");
+
+    funcDict = {
+        '1' : adminAddItem,
+        '2' : adminRemoveItem,
+        '3' : adminEditItem,
+    };
+
+    if(option == '4'):
+        funcDict[option](username, password, "ADMIN");
+    else:   
+        funcDict[option](username, password);
+
+#admin | Admin Function #4 - Adding New Items to Menu
+def adminAddItem(username, password):
+    clear();
+    print("Option Selected: Adding Item to Menu\n");
+    itemName = input("Enter New Item Name: ");
+    itemPrice = float(input("Enter Price of New Item, (in 2 d.p.): "));
+    count = 1;
+
+    file = open("storeMenu.txt", "r");
+    for info in file:
+        count += 1;
+    file.close();
+    
+    file = open("storeMenu.txt", "a");
+    file.write(f"{count} | {itemName} | {itemPrice}\n");
+    file.close();
+
+    print("Item Has Been Successfully Added.\n");
+    print("Showing New Menu...\n");
+    file = open("storeMenu.txt", "r");
+    for info in file:
+        a = info.split(" | ");
+        print(f"{a[0]} | Name: {a[1]} | Price: RM{a[2]}", end='');
+
+    time.sleep(3);
+    print("Redirecting Back to Administrator Menu...\n");
+    time.sleep(1);
+    admin(username, password, "ADMIN");
+
+#admin | Admin Function #5 - Removng Items from Menu
+def adminRemoveItem(username, password):
+    clear();
+    print("Displaying Store Menu...\n");
+    file = open("storeMenu.txt", "r");
+    totalPrice = 0.00;
+    count = 0;
+    
+    for info in file:
+        a, name, price = info.split(" | ");
+        a = a.strip();
+        name = name.strip();
+        price = price.strip();
+        print(f"{a} | Product: {name} | Price: RM{price}");
+        count += 1;
+        totalPrice += float(price);
+        totalPrice = round(totalPrice, 2);
+    print(f"\nTotal Item Count: {count}  |  Total Item Price: {totalPrice}");
+    file.close();
+
+    file = open("storeMenu.txt", "r");
+    lines = file.readlines();
+    file.close();
+
+    option = input("\nEnter The Number of The Item You Want to Remove (Enter a Letter to Cancel): ");
+    if(option.isdigit()):
+        file = open("storeMenu.txt", "w");
+        for line in lines:
+            info = line.split(" | ");
+            if(info[0] != option):
+                file.write(line);
+        file.close();
+
+        count = 1;
+        file = open("storeMenu.txt", "r");
+        lines = file.readlines();
+        file.close();
+
+        file = open("storeMenu.txt", "w");
+        for line in lines:
+            info = line.split(" | ");
+            info[0] = str(count);
+            count += 1;
+            file.write(" | ".join(info));
+        file.close();
+
+        print("Item Successfully Removed.\n");
+        print("Displaying New Menu...\n");
+
+        file = open("storeMenu.txt", "r");
+        for info in file:
+            a = info.split(" | ");
+            print(f"{a[0]} | Name: {a[1]} | Price: RM{a[2]}");
+        file.close();
+
+        time.sleep(3);
+        print("Redirecting Back to Administrator Menu...\n");
+        time.sleep(1);
+        admin(username, password, "ADMIN");
+
+    else:
+        print("Operation Cancelled. Returning to Administrator Menu...");
+        time.sleep(1);
+        admin(username, password, "ADMIN");
+
+# admin | admin function #6 - Editing Administrator Accounts
 # displays all registered administrator accounts
 # prompts user for input to (create new account)/ (remove existing admin account)/ (return to admin menu)
 def adminManageAdmins(username, password):
