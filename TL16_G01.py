@@ -42,6 +42,7 @@ def logReg(option):
             print("\nSame username exists within our database. Please register with another name.")
             print(f"Suggested usernames: {username}123, 123{username}\n");
             print("Redirecting to first screen...\n")
+            time.sleep(3)
             loginSys();
 
         flag = True;
@@ -60,7 +61,7 @@ def logReg(option):
                     if(opt == 'n'):
                         rFlag = False;
                         print("Redirecting to first screen...\n");
-                        time.sleep(1);
+                        time.sleep(3);
                         loginSys();
                     elif(opt == 'y'):
                         rFlag = False;
@@ -92,7 +93,7 @@ def register(username, password, status):
     file.close();
 
     print("Redirecting to first screen...\n");
-    time.sleep(1);
+    time.sleep(3);
     loginSys();
     
 # login system | check for username duplicate
@@ -124,29 +125,31 @@ def login(username, password, status):
         if(username == a and password == b):
             if(c == "ADMIN"):
                 print("Admin Login Attempt Successful! Navigating to Administrative Menu...\n");
+                time.sleep(2);
                 admin(username, password, status);
                 flag = False;
 
             elif(c == "MEMBER"):
                 print(f"Login Successful! Welcome {username}!");
+                time.sleep(2);
                 app(username, password, status);
                 flag = False;
 
             elif(c == "BANNED"):
                 print(f"User {username} Has Been Banned From Using Our Services. Thank You for Understanding.\n");
                 print("Redirecting to First Screen...");
-                time.sleep(1);
+                time.sleep(3);
                 loginSys();
                 flag = False;
 
     if(flag):
         if(username == "admin"):
             print("Admin Login Attempt Unsuccessful. Redirecting to First Screen...");
-            time.sleep(2);
+            time.sleep(4);
             loginSys();
         else:
             print("Invalid username or password.\nRedirecting to first screen...");
-            time.sleep(2);
+            time.sleep(4);
             loginSys();
     file.close()
 
@@ -180,6 +183,12 @@ def loginChangeUsername(username, password):
     print(f"Current Username: {username}");
     newUsername = input("New Username: ");
 
+    if(isSameUsername(newUsername)):
+        print("User With That Name Already Exists! Please Enter Another Name.\n");
+        print("Redirecting Back to Previous Screen...\n");
+        time.sleep(3);
+        userDetailChange(username, password);
+
     file = open("registry.txt", "r");
     lines = file.readlines();
     file.close();
@@ -196,6 +205,7 @@ def loginChangeUsername(username, password):
     
     print("Username change successful! Please login again.");
     print("Redirecting to first screen...\n");
+    time.sleep(3)
     loginSys();
 
 # app | user function #2 - Change user password function
@@ -219,9 +229,10 @@ def loginChangePassword(username, password):
                     loginChangePassword(username, password);
                 elif(opt == 'n'):
                     print("Redirecting to user menu...");
+                    time.sleep(3);
                     app(username, password);
                 else:
-                    print("Invalid input. Please try a valid input.\n");
+                    print("\nInvalid input. Please try a valid input.\n");
 
             else:
                 flag = False;
@@ -242,6 +253,7 @@ def loginChangePassword(username, password):
         file.close();
         print("Password change successful! Please login again.");
         print("Redirecting to first screen...\n");
+        time.sleep(3);
         loginSys();
         
     else:
@@ -253,6 +265,7 @@ def loginChangePassword(username, password):
             elif(opt == 'n'):
                 flag = True;
                 print("Redirecting to user menu...\n");
+                time.sleep(3);
                 app(username, password);
             else:
                 print("Invalid input. Please try again!\n");
@@ -392,7 +405,7 @@ def viewCart(username, password):
         opt = input("Enter Any Input to Return to User Menu.\n");
         print("Redirecting to User Menu...\n");
         file.close();
-        time.sleep(1);
+        time.sleep(3);
         app(username, password, "MEMBER");
 
     else:
@@ -462,17 +475,17 @@ def viewCart(username, password):
                             checkOut(username, password, totalPrice);
                         elif(opt == '2'):
                             print("Redirecting to User Menu...\n");
-                            time.sleep(1);
+                            time.sleep(3);
                             app(username, password, "MEMBER");
                         else:
                             print("Invalid Input. Operation Cancelled.\n");
                             print("Redirecting to User Menu...\n");
-                            time.sleep(1);
+                            time.sleep(3);
                             app(username, password, "MEMBER");
 
                     elif(option == '4'):
                         print("Redirecting to User Menu...\n");
-                        time.sleep(1);
+                        time.sleep(3);
                         app(username, password, "MEMBER");
 
                     else:
@@ -481,7 +494,7 @@ def viewCart(username, password):
                 print(f"Your Cart is Empty. There is Nothing To Empty.\n");
                 opt = input("Enter Any Input to Return to User Menu.\n");
                 print("Redirecting to User Menu...\n");
-                time.sleep(1);
+                time.sleep(3);
                 app(username, password, "MEMBER");
 
 # app | user function #6 - Check out Items in Cart;
@@ -522,7 +535,7 @@ def emptyCart(username, password):
         opt = input("Enter Any Input to Return to User Menu.\n");
         print("Redirecting to User Menu...\n");
         file.close();
-        time.sleep(1);
+        time.sleep(3);
         app(username, password, "MEMBER");
 
     else:
@@ -567,13 +580,13 @@ def emptyCart(username, password):
 
                         print("Your Cart has Been Successfully Emptied!\n");
                         print("Redirecting to User Menu...");
-                        time.sleep(2);
+                        time.sleep(3);
                         app(username, password, "MEMBER");
 
                     else:
                         print("Cancelling Function...");
                         print("Redireciting to User Menu...\n");
-                        time.sleep(1);
+                        time.sleep(3);
                         app(username, password, "MEMBER");
 
 #app END
@@ -625,7 +638,7 @@ def adminManageMember(username, password):
 
     else:
         print("Invalid Input. Please Enter A Registered Member's Name.");
-        time.sleep(1);
+        time.sleep(3);
         adminManageMember(username, password);
 
 # admin | admin function #2 - Removing Registered Member
@@ -645,7 +658,7 @@ def adminRemoveMember(username, password, member):
 
     print(f"{member} Has Been Successfully Removed.");
     print("Redirecting to Administrative Menu...");
-    time.sleep(1);
+    time.sleep(3);
     admin(username, password);
 
 # admin | admin function #3 - Banning Registered Member
@@ -669,7 +682,7 @@ def adminBanMember(username, password, member):
     file.close();
     print("Member Successfully Banned.");
     print("Redirecting to Administrative Menu...");
-    time.sleep(1);
+    time.sleep(3);
 
     admin(username, password);
 
@@ -698,17 +711,16 @@ def adminEditMenu(username, password):
         totalPrice = round(totalPrice, 2);
     print(f"\nTotal Item Count: {count}  |  Total Item Price: {totalPrice}");
 
-    option = input("What Would You Like to Do?\n[1] - Add Items\n[2] - Remove Items\n[3] - Edit Items\n[4] - Return to Administrator Menu\n\n");
+    option = input("What Would You Like to Do?\n[1] - Add Items\n[2] - Remove Items\n[3] - Return to Administrator Menu\n\n");
 
     funcDict = {
         '1' : adminAddItem,
         '2' : adminRemoveItem,
-        '3' : adminEditItem,
     };
 
-    if(option == '4'):
+    if(option == '3'):
         funcDict[option](username, password, "ADMIN");
-    else:   
+    else:
         funcDict[option](username, password);
 
 #admin | Admin Function #4 - Adding New Items to Menu
@@ -735,9 +747,8 @@ def adminAddItem(username, password):
         a = info.split(" | ");
         print(f"{a[0]} | Name: {a[1]} | Price: RM{a[2]}", end='');
 
-    time.sleep(3);
     print("Redirecting Back to Administrator Menu...\n");
-    time.sleep(1);
+    time.sleep(3);
     admin(username, password, "ADMIN");
 
 #admin | Admin Function #5 - Removng Items from Menu
@@ -795,14 +806,13 @@ def adminRemoveItem(username, password):
             print(f"{a[0]} | Name: {a[1]} | Price: RM{a[2]}");
         file.close();
 
-        time.sleep(3);
         print("Redirecting Back to Administrator Menu...\n");
-        time.sleep(1);
+        time.sleep(3);
         admin(username, password, "ADMIN");
 
     else:
         print("Operation Cancelled. Returning to Administrator Menu...");
-        time.sleep(1);
+        time.sleep(3);
         admin(username, password, "ADMIN");
 
 # admin | admin function #6 - Editing Administrator Accounts
@@ -904,19 +914,24 @@ def app(username, password, status):
 
     print("What would you like to do?\n");
     option = input("[1] - Edit Username/Password\n[2] - View Our Store\n[3] - View Cart\n[4] - Return to Login Menu\n[5] - Exit Program\n\n");
+    while not(option.isdigit() and int(option) < 6 and int(option) > 1):
+        print("\nInvalid Input Detected. Please Enter a Valid Prompt.\n");
+        print("Redirecting to User Interface...\n");
+        time.sleep(2);
+        option = input("[1] - Edit Username/Password\n[2] - View Our Store\n[3] - View Cart\n[4] - Return to Login Menu\n[5] - Exit Program\n\n");
 
-    appDict = {
-        '1' : userDetailChange,
-        '2' : viewStore,
-        '3' : viewCart,
-        '4' : loginSys,
-        '5' : exitProgram,
-    };
+        appDict = {
+            '1' : userDetailChange,
+            '2' : viewStore,
+            '3' : viewCart,
+            '4' : loginSys,
+            '5' : exitProgram,
+        };
 
-    if(option == '4'):
-        loginSys();
-    else:
-        appDict[option](username, password);
+        if(option == '4'):
+            loginSys();
+        else:
+            appDict[option](username, password);
 
 #ADMIN APP MASTER FUNCTION
 # Admin User Interface Master Function
@@ -928,6 +943,11 @@ def admin(username, password, status):
     print(f"What would you like to do, {username}?\n");
 
     option = input("[1] - Change Administrator Password\n[2] - Manage Registered Member List\n[3] - Manage Administrator Accounts\n[4] - Edit Store Menu\n[5] - Return to Login Menu\n[6] - Exit Program\n\n");
+    while not(option.isdigit() and int(option) < 7 and int(option) > 0):
+        print("\nInvalid Input Detected. Please Enter a Valid Prompt.\n");
+        print("Redirecting to User Interface...\n");
+        time.sleep(2);
+        option = input("[1] - Change Administrator Password\n[2] - Manage Registered Member List\n[3] - Manage Administrator Accounts\n[4] - Edit Store Menu\n[5] - Return to Login Menu\n[6] - Exit Program\n\n");
 
     appDict = {
         '1' : loginChangePassword,

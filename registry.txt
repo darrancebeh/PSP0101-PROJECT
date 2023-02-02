@@ -1,5 +1,2 @@
-admin | 123 | ADMIN
-darrance | 123 | BANNED
-darrancebeh | 1234 | MEMBER
-db123 | 123 | MEMBER
-dar | dar123 | ADMIN
+darrance | 123 | MEMBER
+db1234 | 123 | MEMBER
