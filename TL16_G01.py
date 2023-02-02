@@ -1,7 +1,7 @@
 # *********************************************************
-# Program: TL16L_G1.py
+# Program: TL16L_G01.py
 # Course: PSP0101 PROBLEM SOLVING AND PROGRAM DESIGN
-# Tutorial Section: TL16L Group: G1
+# Tutorial Section: TL16L Group: G01
 # Trimester: 2215
 # Year: 2022/23 Trimester 1
 # Member_1: 1211108266 | DARRANCE BEH HENG SHEK
@@ -144,9 +144,22 @@ def login(username, password, status):
 
     if(flag):
         if(username == "admin"):
-            print("Admin Login Attempt Unsuccessful. Redirecting to First Screen...");
-            time.sleep(4);
-            loginSys();
+            file = open("registry.txt", "r");
+            for info in file:
+                a = info.split(" | ")[0];
+            
+            if(username not in a):
+                print("There is Currently no Administrators Registered in Our Database.\n");
+                print("Redirecting to First Screen...\n");
+                time.sleep(3);
+                loginSys();
+                file.close();
+
+            else:
+                print("Admin Login Attempt Unsuccessful. Redirecting to First Screen...");
+                time.sleep(4);
+                loginSys();
+                
         else:
             print("Invalid username or password.\nRedirecting to first screen...");
             time.sleep(4);
@@ -154,7 +167,7 @@ def login(username, password, status):
     file.close()
 
 #login system END
-
+   
 #app START
 
 #app | normal user START
@@ -164,14 +177,23 @@ def login(username, password, status):
 def userDetailChange(username, password):
     clear();
     print("Option Selected - [ Edit Username/Password ]\n");
-    logDetOpt = input("What would you like to do? Input the respective number.\n[1] - Change Username\n[2] - Change Password\n[3] - Return to menu.\n\n");
+    option = input("What would you like to do? Input the respective number.\n[1] - Change Username\n[2] - Change Password\n[3] - Return to menu.\n\n");
+    
+    while not(option.isdigit() and int(option) < 4 and int(option) > 0):
+        print("\nInvalid Input Detected.\n");
+        print("Please Enter a Valid Prompt.\n\n");
+        option = input("What would you like to do? Input the respective number.\n[1] - Change Username\n[2] - Change Password\n[3] - Return to menu.\n\n");
+    
     logDetDict = {
         '1' : loginChangeUsername,
         '2' : loginChangePassword,
         '3' : app,
     };
 
-    logDetDict[logDetOpt](username, password);
+    if(option == '3'):
+        app(username, password, "MEMBER");
+    else:
+        logDetDict[option](username, password);
 
 # app | user function #1 - Change user username
 # prompts user to enter new username
@@ -290,9 +312,13 @@ def viewStore(username, password):
 
     option = input("\n\nWhat Would You Like to Do?\n\n[1] - Add Items To Cart\n[2] - View Cart\n[3] - Return to User Menu\n\n")
 
+    while not(option.isdigit() and int(option) < 4 and int(option) > 0):
+        print("\nInvalid Input Detected.\n");
+        print("Please Enter a Valid Prompt.\n\n");
+        option = input("\n\nWhat Would You Like to Do?\n\n[1] - Add Items To Cart\n[2] - View Cart\n[3] - Return to User Menu\n\n")
+
     funcDict = {
         '2' : viewCart,
-        '3' : app,
     };
 
     if(option == '1'):
@@ -328,6 +354,9 @@ def viewStore(username, password):
                 else:
                     addCart(username, password, totalCart);
                     break;
+
+    elif(option == '3'):
+        app(username, password, "MEMBER");
 
     else:
         funcDict[option](username, password);
@@ -611,7 +640,7 @@ def adminManageMember(username, password):
     file.close();
 
     prompt = input("\nEnter Member Username for More Actions: ");
-    
+
     if(prompt in info):
         print(f"Selected Member: {prompt}\n");
         opt = input("What Would You Like to Do?\n[1] - Remove Member\n[2] - Ban Member\n[3] - Return to Member List\n[4] - Return to Administrative Menu\n\n");
@@ -638,7 +667,7 @@ def adminManageMember(username, password):
 
     else:
         print("Invalid Input. Please Enter A Registered Member's Name.");
-        time.sleep(3);
+        time.sleep(2);
         adminManageMember(username, password);
 
 # admin | admin function #2 - Removing Registered Member
@@ -712,6 +741,11 @@ def adminEditMenu(username, password):
     print(f"\nTotal Item Count: {count}  |  Total Item Price: {totalPrice}");
 
     option = input("What Would You Like to Do?\n[1] - Add Items\n[2] - Remove Items\n[3] - Return to Administrator Menu\n\n");
+
+    while not(option.isdigit() and int(option) < 4 and int(option) > 0):
+        print("\nInvalid Input Detected.\n");
+        print("Please Enter a Valid Prompt.\n\n");
+        option = input("What Would You Like to Do?\n[1] - Add Items\n[2] - Remove Items\n[3] - Return to Administrator Menu\n\n");
 
     funcDict = {
         '1' : adminAddItem,
@@ -839,6 +873,11 @@ def adminManageAdmins(username, password):
     
     option = input("What Would You Like to Do?\n\n[1] - Create New Administrator Account\n[2] - Remove Administrator Account\n[3] - Return to Administrative Menu\n\n");
 
+    while not(option.isdigit() and int(option) < 4 and int(option) > 0):
+        print("\nInvalid Input Detected.\n");
+        print("Please Enter a Valid Prompt.\n\n");
+        option = input("What Would You Like to Do?\n\n[1] - Create New Administrator Account\n[2] - Remove Administrator Account\n[3] - Return to Administrative Menu\n\n");
+
     funcDict = {
         '1' : register,
         '2' : adminRemoveMember,
@@ -914,24 +953,23 @@ def app(username, password, status):
 
     print("What would you like to do?\n");
     option = input("[1] - Edit Username/Password\n[2] - View Our Store\n[3] - View Cart\n[4] - Return to Login Menu\n[5] - Exit Program\n\n");
-    while not(option.isdigit() and int(option) < 6 and int(option) > 1):
-        print("\nInvalid Input Detected. Please Enter a Valid Prompt.\n");
-        print("Redirecting to User Interface...\n");
-        time.sleep(2);
+    while not(option.isdigit() and int(option) < 6 and int(option) > 0):
+        print("\nInvalid Input Detected.\n");
+        print("Please Enter a Valid Input.\n\n");
         option = input("[1] - Edit Username/Password\n[2] - View Our Store\n[3] - View Cart\n[4] - Return to Login Menu\n[5] - Exit Program\n\n");
 
-        appDict = {
-            '1' : userDetailChange,
-            '2' : viewStore,
-            '3' : viewCart,
-            '4' : loginSys,
-            '5' : exitProgram,
-        };
+    appDict = {
+        '1' : userDetailChange,
+        '2' : viewStore,
+        '3' : viewCart,
+        '4' : loginSys,
+        '5' : exitProgram,
+    };
 
-        if(option == '4'):
-            loginSys();
-        else:
-            appDict[option](username, password);
+    if(option == '4'):
+        loginSys();
+    else:
+        appDict[option](username, password);
 
 #ADMIN APP MASTER FUNCTION
 # Admin User Interface Master Function
@@ -944,9 +982,8 @@ def admin(username, password, status):
 
     option = input("[1] - Change Administrator Password\n[2] - Manage Registered Member List\n[3] - Manage Administrator Accounts\n[4] - Edit Store Menu\n[5] - Return to Login Menu\n[6] - Exit Program\n\n");
     while not(option.isdigit() and int(option) < 7 and int(option) > 0):
-        print("\nInvalid Input Detected. Please Enter a Valid Prompt.\n");
-        print("Redirecting to User Interface...\n");
-        time.sleep(2);
+        print("\nInvalid Input Detected.\n");
+        print("Please Enter a Valid Prompt\n\n");
         option = input("[1] - Change Administrator Password\n[2] - Manage Registered Member List\n[3] - Manage Administrator Accounts\n[4] - Edit Store Menu\n[5] - Return to Login Menu\n[6] - Exit Program\n\n");
 
     appDict = {
