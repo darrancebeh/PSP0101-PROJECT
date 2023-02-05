@@ -10,10 +10,12 @@
 # Member_4: 1211109799 | LEE MEI SHAN
 # *********************************************************
 # Task Distribution
-# Member_1: 
-# Member_2: 
-# Member_3: 
-# Member_4: 
+# Member_1: clear(), logOrReg(), logReg(option), isSameUsername(username), userDetailChange(), loginChangeUsername(username, password),
+#           loginChangePassword(username, password), addCart(username, password, cartItems), emptyCart(username, password),
+#           adminEditMenu(username, password), adminAddItem(username, password), adminRemoveItem(username, password)
+# Member_2: register(username, password, status), login(username, password, status), adminManageAdmins(username, password), loginSys()
+# Member_3: viewStore(username, password), viewCart(username, password), checkOut(username, password), exitProgram(), app(username, password, status)
+# Member_4: adminManageMember(username, password), adminRemoveMember(username, password, member), adminBanMember(username, password, member), admin(username, password, status)
 # *********************************************************
 
 import os;
@@ -353,6 +355,7 @@ def viewStore(username, password):
                     pass;
                 else:
                     addCart(username, password, totalCart);
+                    app(username, password, "MEMBER");
                     break;
 
     elif(option == '3'):
@@ -379,7 +382,7 @@ def addCart(username, password, cartItems):
         for item in cartItems:
             a, b, c = info.split(" | ");
             a = a.strip(); 
-            b = b.strip(); 
+            b = b.strip();
             c = c.strip();
 
             if(item == a):
@@ -551,7 +554,7 @@ def checkOut(username, password, totalPrice):
 
 # app | user function #6 - Empty all user items in cart;
 # asks user for confirmation
-# if confirmed, removes user data and cart in "uesrsCart.txt"
+# if confirmed, removes user data and cart in "usersCart.txt"
 def emptyCart(username, password):
     clear();
     file = open("usersCart.txt", "r");
@@ -716,7 +719,8 @@ def adminBanMember(username, password, member):
     admin(username, password);
 
 # admin | Editing Store Menu Master Function
-# not done
+# allows admin to manipulate the items in the menu 
+# adds/removes items from the menu by editing the "storeMenu.txt" file
 def adminEditMenu(username, password):
     clear();
     print("Displaying Administrator Menu Editing Interface\n");
@@ -758,6 +762,7 @@ def adminEditMenu(username, password):
         funcDict[option](username, password);
 
 #admin | Admin Function #4 - Adding New Items to Menu
+# adds items to the menu
 def adminAddItem(username, password):
     clear();
     print("Option Selected: Adding Item to Menu\n");
@@ -786,6 +791,7 @@ def adminAddItem(username, password):
     admin(username, password, "ADMIN");
 
 #admin | Admin Function #5 - Removng Items from Menu
+# removes items from the menu
 def adminRemoveItem(username, password):
     clear();
     print("Displaying Store Menu...\n");
